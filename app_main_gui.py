@@ -34,30 +34,32 @@ class LoginForm(QtWidgets.QWidget):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        # create label
+        # CREATE LABEL
         l1 = QtWidgets.QLabel(self)
         l2 = QtWidgets.QLabel(self)
 
         l1.setText("Tên đăng nhập: ")
         l1.move(30, 50)
-        # Create ID text box
+
+        # CREATE ID TEXT BOX
         user_text = QtWidgets.QLineEdit(self)
         user_text.move(30, 80)
         user_text.resize(220, 25)
 
         l2.setText("Mật khẩu: ")
         l2.move(30, 120)
-        # Create password text box
+
+        # CREATE PASSWORD TEXT BOX
         password_text = QtWidgets.QLineEdit(self)
         password_text.setEchoMode(QtWidgets.QLineEdit.Password)
         password_text.move(30, 150)
         password_text.resize(220, 25)
 
-        # Create button in the window
+        # CREATE BUTTON IN THE WINDOW
         button = QtWidgets.QPushButton("Quản lý", self)
         button.move(200, 300)
 
-        # connect button to function on_click
+        # CONNECT BUTTON TO FUNCTION ON_CLICK
         button.clicked.connect(self.on_click)
 
     @QtCore.pyqtSlot()
@@ -72,19 +74,21 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
+        self.so_luong_hang_hoa = 0  # this variable is used for counting the number of purchased item
         self.init_ui()
 
     def init_ui(self):
         self.setWindowTitle("Main Window")
-        self.resize(800, 600)
+        # self.resize(800, 600)
+        self.setFixedSize(800, 600)
         self.statusBar().showMessage("Hello Customers! Our best wishes to you!")
         # selected_color = QtGui.QColor(0, 255, 255)
         # self.setStyleSheet("QWidget {background-color: %s}" % selected_color.name())
 
-        # create menu bar
+        # CREATE MENU BAR
         menu_bar = self.menuBar()
 
-        # create root menus
+        # CREATE ROOT MENUS
         quan_ly = menu_bar.addMenu("Quản lý cửa hàng")
         hang_hoa = menu_bar.addMenu("Hàng hóa")
         giao_dich = menu_bar.addMenu("Giao dịch")
@@ -92,45 +96,57 @@ class MainWindow(QtWidgets.QMainWindow):
         so_quy = menu_bar.addMenu("Sổ quỹ")
         bao_cao = menu_bar.addMenu("Báo cáo")
 
-        # create action for menus
+        # CREATE ACTION FOR MENUS
         luu_action = QtWidgets.QAction("Lưu tùy chỉnh", self)
         luu_action.setShortcut("Ctrl + S")
 
         dong_tien_action = QtWidgets.QAction("Dòng tiền", self)
 
-        # add action to menus
+        # ADD ACTION TO MENUS
         quan_ly.addAction(luu_action)
         so_quy.addAction(dong_tien_action)
 
-        # add search box
+        # ADD SEARCH BOX
         o_tim_kiem = QtWidgets.QLineEdit(self)
         o_tim_kiem.move(450, 30)
         o_tim_kiem.resize(280, 25)
 
-        # add button
+        # ADD BUTTON
         tim_kiem_btn = QtWidgets.QPushButton(self)
         tim_kiem_btn.setIcon(QtGui.QIcon("magnifying glass.png"))
         tim_kiem_btn.move(730, 30)
         tim_kiem_btn.resize(25, 25)
 
-        # add combo box
-        list_hang_hoa = QtWidgets.QComboBox(self)
-        list_hang_hoa.move(30, 60)
-        list_hang_hoa.addItem("Táo")
-        list_hang_hoa.addItem("Cam")
-        list_hang_hoa.addItem("Mận")
-        list_hang_hoa.addItem("Dừa")
-        list_hang_hoa.addItem("Ổi")
+        them_sp_btn = QtWidgets.QPushButton("Thêm vào", self)
+        them_sp_btn.move(600, 100)
+        them_sp_btn.resize(70, 30)
 
+        # ADD COMBO BOX
+        # list_hang_hoa = QtWidgets.QComboBox(self)
+        # list_hang_hoa.move(30, 60)
+        # list_hang_hoa.addItem("Táo")
+        # list_hang_hoa.addItem("Cam")
+        # list_hang_hoa.addItem("Mận")
+        # list_hang_hoa.addItem("Dừa")
+        # list_hang_hoa.addItem("Ổi")
 
+        # ADD TABLE
+        ban_tinh_tien = QtWidgets.QTableWidget(self)
+        ban_tinh_tien.setRowCount(4)
+        ban_tinh_tien.setColumnCount(3)
+        # ban_tinh_tien.setHorizontalHeaderLabels(["Code", ""])
+        ban_tinh_tien.move(100, 100)
+        ban_tinh_tien.resize(400, 400)
 
-        # triggered events
+        # TRIGGERED EVENTS
         luu_action.triggered.connect(self.save_trigger)
         dong_tien_action.triggered.connect(self.money_transaction_trigger)
-        list_hang_hoa.currentTextChanged.connect(self.combo_box_trigger)
+        # list_hang_hoa.currentTextChanged.connect(self.combo_box_trigger)
+        them_sp_btn.clicked.connect(lambda: self.insert_item_to_table(ban_tinh_tien))
 
 
-    # define triggered events
+
+    # DEFINE TRIGGERED EVENTS
     def save_trigger(self):
         print("luu thu gi do o day")
 
@@ -144,6 +160,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def combo_box_trigger(self, value):
         print("combobox changed ", value)
+
+    def insert_item_to_table(self, table, item_code="102020", item_name="Random", price="11000"):
+        table.setItem(self.so_luong_hang_hoa, 0, QtWidgets.QTableWidgetItem(item_code))
+        table.setItem(self.so_luong_hang_hoa, 1, QtWidgets.QTableWidgetItem(item_name))
+        table.setItem(self.so_luong_hang_hoa, 2, QtWidgets.QTableWidgetItem(price))
+        self.so_luong_hang_hoa += 1
 
 
 class Invoice:
