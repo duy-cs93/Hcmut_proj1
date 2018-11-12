@@ -55,19 +55,20 @@ class MainWindow(QtWidgets.QMainWindow):
         add_product_btn.resize(70, 30)
 
         # ADD TABLE
-        purchased_list = QtWidgets.QTableWidget(self)
-        purchased_list.setRowCount(0)
-        purchased_list.setColumnCount(4)
-        purchased_list.setHorizontalHeaderLabels(["Code", "Name", "Price", ""])
-        purchased_list.move(100, 100)
-        purchased_list.resize(450, 400)
+        self.purchased_list = QtWidgets.QTableWidget(self)
+        self.purchased_list.setRowCount(0)
+        self.purchased_list.setColumnCount(4)
+        self.purchased_list.setHorizontalHeaderLabels(["Code", "Name", "Price", ""])
+        self.purchased_list.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)   # disable editing feature
+        self.purchased_list.move(100, 100)
+        self.purchased_list.resize(450, 400)
 
         # TRIGGERED EVENTS
         save_action.triggered.connect(self.save_trigger)
         cash_flow_action.triggered.connect(self.money_transaction_trigger)
-        add_product_btn.clicked.connect(lambda: self.insert_item_to_table(purchased_list))
+        add_product_btn.clicked.connect(lambda: self.insert_item_to_table(self.purchased_list))
         # need to fix this
-        # purchased_list.cellDoubleClicked(self.amount_of_products-1, 4).connect(self.delete_item_from_table)
+        self.purchased_list.cellClicked.connect(self.delete_item_from_table)
 
     # DEFINE TRIGGERED EVENTS
     def save_trigger(self):
@@ -81,18 +82,28 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mt_trigger_pop_up.show()
 
     def insert_item_to_table(self, table, item_code="102020", item_name="Random", price="11000"):
-        self.amount_of_products += 1
-        table.setRowCount(self.amount_of_products)
-        table.setItem(self.amount_of_products-1, 0, QtWidgets.QTableWidgetItem(item_code))
-        table.setItem(self.amount_of_products-1, 1, QtWidgets.QTableWidgetItem(item_name))
-        table.setItem(self.amount_of_products-1, 2, QtWidgets.QTableWidgetItem(price))
-        table.setItem(self.amount_of_products-1, 3, QtWidgets.QTableWidgetItem("X"))
+        # table.setRowCount(self.amount_of_products)
+        # self.amount_of_products += 1
+        # table.setItem(self.amount_of_products-1, 0, QtWidgets.QTableWidgetItem(item_code))
+        # table.setItem(self.amount_of_products-1, 1, QtWidgets.QTableWidgetItem(item_name))
+        # table.setItem(self.amount_of_products-1, 2, QtWidgets.QTableWidgetItem(price))
+        # table.setItem(self.amount_of_products-1, 3, QtWidgets.QTableWidgetItem("X"))
 
-    def delete_item_from_table(self, table):
-        self.amount_of_products -= 1
-        table.setRowCount(self.amount_of_products)
+        # fixed code
+        row_position = table.rowCount()
+        table.insertRow(row_position)
+        table.setItem(row_position, 0, QtWidgets.QTableWidgetItem(item_code))
+        table.setItem(row_position, 1, QtWidgets.QTableWidgetItem(item_name))
+        table.setItem(row_position, 2, QtWidgets.QTableWidgetItem(price))
+        table.setItem(row_position, 3, QtWidgets.QTableWidgetItem("X"))
+
+    def delete_item_from_table(self, row, column):
+        if self.purchased_list.item(row, column).text() == 'X':
+            print("delete row number %s" % row)
+            self.purchased_list.removeRow(row)
 
 
+# MAIN CODE HERE
 app = QtWidgets.QApplication(sys.argv)
 w = MainWindow()
 w.show()
